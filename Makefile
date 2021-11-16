@@ -2,9 +2,7 @@ CC = clang
 
 NAME = philo
 
-LIB = lib/
-
-LIBFT = $(LIB)libft
+LIBFT = libft
 
 DIR_S = srcs/
 
@@ -18,7 +16,7 @@ OBJS = $(SRCS:.c=.o)
 
 CFLAGS = -Wall -Werror -Wextra -I $(HEADER)
 
-FLAGS = -L $(LIBFT) -lft -D NUM_THREADS=3
+FLAGS = -L $(LIBFT) -lft #-D NUM_THREADS=3
 
 MACOS_MACRO = -D MACOS
 
@@ -42,7 +40,7 @@ $(NAME): $(OBJS) $(HEADER) $(LIBFT)
 	$(CC) $(CFLAGS) $(OBJS) $(FLAGS) -o $(NAME)
 
 norme:
-	norminette ./$(LIB)
+	norminette ./$(LIBFT)
 	@echo
 	norminette ./$(HEADER)
 	@echo

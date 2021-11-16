@@ -17,35 +17,23 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <pthread.h>
-
-typedef struct s_eat
-{
-	int		fork;
-	int		time;
-}	t_eat;
-
-typedef struct s_sleep
-{
-	int		time;
-}	t_sleep;
-
-typedef struct s_think
-{
-	int		time;
-}	t_think;
+# include <stdio.h>
+# include "libft.h"
 
 typedef struct s_philo
 {
 	int             nb;
-	struct s_eat    eat;
-	struct s_sleep  sleep;
-	struct s_think  think;
-	struct s_philo	*next;
+	int				eat;
+	int				fork;
 }	t_philo;
 
 typedef struct s_env
 {
 	int				max;
+	int				die;
+	int				sleep;
+	int			    eat;
+	int				think;
 	int             *fork;
 	struct s_philo	*philo;
 }	t_env;
