@@ -2,13 +2,13 @@ CC = clang
 
 NAME = philo
 
-LIBFT = libft
-
 DIR_S = srcs/
 
 HEADER = includes/
 
-SOURCES =	main.c
+SOURCES =	main.c	\
+			utils.c	\
+			init.c
 
 SRCS = $(addprefix $(DIR_S),$(SOURCES))
 
@@ -16,7 +16,7 @@ OBJS = $(SRCS:.c=.o)
 
 CFLAGS = -Wall -Werror -Wextra -I $(HEADER)
 
-FLAGS = -L $(LIBFT) -lft #-D NUM_THREADS=3
+FLAGS = -D NUM_THREADS=3
 
 MACOS_MACRO = -D MACOS
 
@@ -35,13 +35,10 @@ endif
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(HEADER) $(LIBFT)
-	make -C $(LIBFT)
+$(NAME): $(OBJS) $(HEADER)
 	$(CC) $(CFLAGS) $(OBJS) $(FLAGS) -o $(NAME)
 
 norme:
-	norminette ./$(LIBFT)
-	@echo
 	norminette ./$(HEADER)
 	@echo
 	norminette ./$(DIR_S)
@@ -50,10 +47,10 @@ bonus: all
 
 clean:
 	@rm -f $(OBJS)
-	@make clean -C $(LIBFT)
 
 fclean: clean
 	@rm -f $(NAME)
-	@make fclean -C $(LIBFT)
 
 re: fclean all
+
+.PHONY: re fclean clean bonus norme all

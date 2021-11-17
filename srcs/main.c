@@ -3,96 +3,78 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tamigore <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/04 18:20:04 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/04 18:20:05 by tamigore         ###   ########.fr       */
+/*   Created: 2021/11/17 18:31:08 by tamigore          #+#    #+#             */
+/*   Updated: 2021/11/17 19:21:24 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	exit_all(t_philo  *philo, int ex)
-{
-	t_philo	*tmp;
+//int	get_close_fork(t_env *env)
+//{
+//	
+//}
 
-	if (!philo)
-		exit(ex);
-	while (philo)
+void	*routine(void *arg)
+{
+	t_env *env;
+
+	env = arg;
+	if (env->philo[env->index].full != 1)
 	{
-		tmp = philo;
-		philo = philo->next;
-		free(tmp);
+//		if (env->fork[env->index] && get_close_fork(env))
+//		{
+//			
+//		}
+		if (env->limit != -1)
+		{
+			if (env->philo[env->index].eat < env->limit)
+				env->philo[env->index].eat++;
+			else
+				env->philo[env->index].full = 1;
+		}
+		else
+			env->philo[env->index].eat++;
+		pthread_mutex_lock(&(env->print.mutex));
+		env->print.f(env->tv, env->time, env->philo[env->index].nb, "is eating");
+		pthread_mutex_unlock(&(env->print.mutex));
 	}
-	exit(ex);
+	return (NULL);
 }
 
-void			timestamp(int time, char *act)
+void	start(t_env *env)
 {
-	printf("time_stamp_in_ms %d %s\n", time, act);
-}
+	int err;
+	int	i;
 
-static t_philo	*init_philo(int	nb, t_env *env)
-{
-	t_philo *philo;
-
-	philo = malloc(sizeof(t_philo) * nb);
-	if (!philo)
-		return (NULL);
-	philo->nb = nb;
-	philo->eat = 0;
-	philo->fork = 0;
-	philo->next = NULL;
-	philo->env = env;
-	return (philo);
-}
-
-static t_env	pars(char **av)
-{
-	t_env	env;
-	t_philo	*philo;
-	int		i;
-
-	env.max = ft_atoi(av[1]);
-	ft_putstr("Error\n");
-	if (!env.max)
-		exit_all(NULL, EXIT_FAILURE);
-	i = 1;
-	philo = init_philo(i++, &env);
-	ft_putstr("Error 2\n");
-	if (!philo)
-		exit_all(philo, EXIT_FAILURE);
-	env.philo = philo;
-	ft_putstr("Error 3\n");
-	philo = philo->next;
-	while (i <= env.max)
+	i = 0;
+	timestamp(env->tv, env->time, 0, "start");
+	while (i < env->max)
 	{
-		printf("Error i = %d\n", i);
-		philo = init_philo(i, &env);
-		if (!philo)
-			exit_all(env.philo, EXIT_FAILURE);
-		philo = philo->next;
+		env->index = i;
+		err = pthread_create(&(env->philo[i].thread), NULL, routine, env);
+		usleep(100);
 		i++;
 	}
-	philo = env.philo;
-	return (env);
+	i = 0;
+	while (i < env->max)
+		pthread_join(env->philo[i++].thread, NULL);
 }
 
-void	print_philo(t_philo *philo)
+void	finish(t_env *env)
 {
-	if (!philo)
+	int	i;
+
+	i = 0;
+	while (i < env->max)
 	{
-		printf("Error\n");
-		exit(EXIT_FAILURE);
+		pthread_mutex_destroy(&(env->fork[i].mutex));
+		i++;
 	}
-	printf("philo : nb = %d | eat = %d | fork = %d | next = %p\n", philo->nb, philo->eat, philo->fork);
-	philo = philo->next;
-	ft_putstr("Error\n");
-	while (philo->nb != 1)
-	{
-		printf("philo : nb = %d | eat = %d | fork = %d\n", philo->nb, philo->eat, philo->fork);
-		philo = philo->next;
-	}
+	pthread_mutex_destroy(&(env->print.mutex));
+	pthread_mutex_destroy(&(env->dead.mutex));
 }
 
 int		main(int ac, char **av)
@@ -105,7 +87,10 @@ int		main(int ac, char **av)
 		printf(" time_to_sleep [number_of_times_each_philosopher_must_eat]");
 		exit(EXIT_FAILURE);
 	}
-	env = pars(av);
-	print_philo(env.philo);
+	env = pars(av, ac);
+	printf("The %d Philosophers are now sitted around the table\n", env.max);
+	print_philo(env);
+	start(&env);
+	finish(&env);
 	return (0);
 }
