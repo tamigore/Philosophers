@@ -57,6 +57,8 @@ int	timestamp(struct timeval tv, int time, int nb, char *act)
     if (nb > 0)
 	    printf("\x1b[31m""time |%d|""\x1b[36m"": Philosophe number %d %s\n", t, nb, act);
     else
+	{
         printf("\x1b[31m""time |%d|""\x1b[36m"": %s\n", t, act);
+	}
 	return (1);
 }

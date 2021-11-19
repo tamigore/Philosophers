@@ -59,16 +59,25 @@ int		pars(t_env *env, char **av, int ac)
 	env->philo = NULL;
 	ret = init_arg(env, av, ac);
 	if (!ret)
+	{
+		printf("arg ?\n");
 		return (0);
+	}
 	env->philo = malloc(sizeof(t_philo) * env->arg.max);
 	if (!env->philo)
+	{
+		printf("malloc philo ?\n");
 		return (0);
+	}
 	i = 0;
 	while (i < env->arg.max)
 	{
 		ret = init_philo(env, i);
 		if (!ret)
+		{
+			printf("init philo ?\n");
 			return (0);
+		}
 		if (i > 0)
 			env->philo[i - 1].next_fork = &(env->philo[i].fork);
 		i++;
