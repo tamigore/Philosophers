@@ -6,48 +6,74 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 18:56:02 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/17 18:59:18 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/11/19 16:59:50 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-t_philo	init_philo(int	nb)
+int	init_philo(t_env *env, int	nb)
 {
-	t_philo philo;
+	int	ret;
 
-	philo.nb = nb;
-	philo.eat = 0;
-	philo.full = 0;
-	return (philo);
+	env->philo[nb].id = nb + 1;
+	env->philo[nb].eat = 0;
+	env->philo[nb].full = 0;
+	ret = pthread_mutex_init(&(env->philo[nb].fork.mutex), NULL);
+	if (ret != 0)
+		return (0);
+	env->philo[nb].fork.data = 1;
+	return (1);
 }
 
-t_env	pars(char **av, int ac)
+int	init_arg(t_env *env, char **av, int ac)
 {
-	t_env	env;
-	int		i;
+	int	ret;
 
-	env.max = safe_atoi(av[1]);
-	env.die = safe_atoi(av[2]);
-	env.sleep = safe_atoi(av[3]);
-	env.eat = safe_atoi(av[4]);
+	env->arg.max = safe_atoi(av[1]);
+	env->arg.die = safe_atoi(av[2]);
+	env->arg.sleep = safe_atoi(av[3]);
+	env->arg.eat = safe_atoi(av[4]);
 	if (ac == 6)
-		env.limit = safe_atoi(av[5]);
+		env->arg.limit = safe_atoi(av[5]);
 	else
-		env.limit = -1;
+		env->arg.limit = -1;
+	gettimeofday(&env->arg.tv, NULL);
+	env->arg.time = env->arg.tv.tv_sec * 1000 + env->arg.tv.tv_usec / 1000;
+	ret = pthread_mutex_init(&(env->arg.dead.mutex), NULL);
+	if (ret != 0)
+		return (0);
+	env->arg.dead.data = 0;
+	ret = pthread_mutex_init(&(env->arg.print.mutex), NULL);
+	if (ret != 0)
+		return (0);
+	env->arg.print.f = timestamp;
+	return (1);
+}
+
+int		pars(t_env *env, char **av, int ac)
+{
+	int		i;
+	int		ret;
+
+	env->philo = NULL;
+	ret = init_arg(env, av, ac);
+	if (!ret)
+		return (0);
+	env->philo = malloc(sizeof(t_philo) * env->arg.max);
+	if (!env->philo)
+		return (0);
 	i = 0;
-	while (i < env.max)
+	while (i < env->arg.max)
 	{
-		env.fork[i].data = 1;
-		pthread_mutex_init(&(env.fork[i].mutex), NULL);
-		env.philo[i] = init_philo(i + 1);
+		ret = init_philo(env, i);
+		if (!ret)
+			return (0);
+		if (i > 0)
+			env->philo[i - 1].next_fork = &(env->philo[i].fork);
 		i++;
 	}
-	env.dead.data = 0;
-	pthread_mutex_init(&(env.dead.mutex), NULL);
-	env.print.f = timestamp;
-	pthread_mutex_init(&(env.print.mutex), NULL);
-	gettimeofday(&env.tv, NULL);
-	env.time = env.tv.tv_sec * 1000 + env.tv.tv_usec / 1000;
-	return (env);
+	if (i > 0)
+		env->philo[i - 1].next_fork = &(env->philo[0].fork);
+	return (1);
 }

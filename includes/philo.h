@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/04 18:20:11 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/17 19:08:12 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/11/19 16:58:36 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,33 +33,39 @@ typedef struct s_print
 
 typedef struct s_philo
 {
-	int             nb;
+	int             id;
 	int				eat;
 	int				full;
+	struct s_mutex	fork;
+	struct s_mutex	*next_fork;
 	pthread_t		thread;
+	pthread_t		death;
 }	t_philo;
 
-typedef struct s_env
+typedef struct s_arg
 {
 	int				max;
 	int				die;
 	int				sleep;
 	int			    eat;
 	int				limit;
-	int				index;
 	int				time;
 	struct timeval	tv;
 	struct s_mutex	dead;
 	struct s_print	print;
-	struct s_mutex	fork[200];
-	struct s_philo	philo[200];
+}	t_arg;
+
+typedef struct s_env
+{
+	struct s_philo	*philo;
+	struct s_arg	arg;
 }	t_env;
 
 unsigned long long int	safe_atoi(char *str);
-void					print_philo(t_env env);
+void					print_philo(t_env *env);
 int						timestamp(struct timeval tv, int time, int nb, char *act);
 
-t_env			pars(char **av, int ac);
-t_philo			init_philo(int	nb);
+int				pars(t_env *env, char **av, int ac);
+int				init_philo(t_env *env, int	nb);
 
 #endif

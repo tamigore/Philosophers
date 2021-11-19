@@ -6,20 +6,20 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 18:30:56 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/17 19:17:28 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/11/19 16:55:24 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	print_philo(t_env env)
+void	print_philo(t_env *env)
 {
 	int	i;
 
 	i = 0;
-	while (i < env.max)
+	while (i < env->arg.max)
 	{
-		printf("philo : nb = %d | eat = %d\n", env.philo[i].nb, env.philo[i].eat);
+		printf("philo : nb = %d | eat = %d\n", env->philo[i].id, env->philo[i].eat);
 		i++;
 	}
 }
@@ -55,7 +55,7 @@ int	timestamp(struct timeval tv, int time, int nb, char *act)
 		return (0);
 	t = (tv.tv_sec * 1000 + tv.tv_usec / 1000) - time;
     if (nb > 0)
-	    printf("\x1b[31m""time |%d|""\x1b[36m"": The %d philosoper %s\n", t, nb, act);
+	    printf("\x1b[31m""time |%d|""\x1b[36m"": Philosophe number %d %s\n", t, nb, act);
     else
         printf("\x1b[31m""time |%d|""\x1b[36m"": %s\n", t, act);
 	return (1);
