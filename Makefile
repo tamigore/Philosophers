@@ -6,9 +6,11 @@ DIR_S = srcs/
 
 HEADER = includes/
 
-SOURCES =	main.c	\
-			utils.c	\
-			init.c
+SOURCES =	main.c		\
+			utils_lib.c	\
+			utils_phi.c	\
+			init.c		\
+			start.c
 
 SRCS = $(addprefix $(DIR_S),$(SOURCES))
 

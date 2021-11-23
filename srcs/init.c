@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 18:56:02 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/19 16:59:50 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/11/23 20:20:05 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,15 @@ int	init_philo(t_env *env, int	nb)
 
 	env->philo[nb].id = nb + 1;
 	env->philo[nb].eat = 0;
-	env->philo[nb].full = 0;
 	ret = pthread_mutex_init(&(env->philo[nb].fork.mutex), NULL);
 	if (ret != 0)
 		return (0);
 	env->philo[nb].fork.data = 1;
 	env->philo[nb].arg = env->arg;
-	env->philo[nb].last_eat = 0;
+	ret = pthread_mutex_init(&(env->philo[nb].last_eat.mutex), NULL);
+	if (ret != 0)
+		return (0);
+	env->philo[nb].last_eat.data = 0;
 	return (1);
 }
 
@@ -40,8 +42,7 @@ int	init_arg(t_env *env, char **av, int ac)
 		env->arg.max_eat = safe_atoi(av[5]);
 	else
 		env->arg.max_eat = -1;
-	gettimeofday(&env->arg.tv, NULL);
-	env->arg.time = env->arg.tv.tv_sec * 1000 + env->arg.tv.tv_usec / 1000;
+	env->arg.time = actual_time();
 	ret = pthread_mutex_init(&(env->arg.dead.mutex), NULL);
 	if (ret != 0)
 		return (0);
