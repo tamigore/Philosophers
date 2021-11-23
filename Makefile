@@ -16,7 +16,7 @@ OBJS = $(SRCS:.c=.o)
 
 CFLAGS = -Wall -Werror -Wextra -I $(HEADER)
 
-FLAGS = -D NUM_THREADS=3
+FLAGS = -lpthread #-g -fsanitize=thread
 
 MACOS_MACRO = -D MACOS
 

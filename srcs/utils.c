@@ -12,14 +12,43 @@
 
 #include "philo.h"
 
+void	*is_dead(void *param)
+{
+	t_philo	*philo;
+
+	philo = param;
+	while (!philo->arg.dead.data)
+	{
+//		printf("debug : full = %d | last_eat = %d | time to die = %d\n", philo->full, philo->last_eat, philo->arg.die);
+		if (!philo->full && philo->last_eat > philo->arg.t_die)
+		{
+			pthread_mutex_lock(&(philo->arg.dead.mutex));
+			philo->arg.dead.data = 1;
+			pthread_mutex_unlock(&(philo->arg.dead.mutex));
+			pthread_mutex_lock(&(philo->arg.print.mutex));
+			philo->arg.print.f(philo->arg.tv, philo->arg.time, philo->id, "is dead");
+			pthread_mutex_unlock(&(philo->arg.print.mutex));
+		}
+		printf("dafuk\n");
+	}
+	return (NULL);
+}
+
 void	print_philo(t_env *env)
 {
 	int	i;
 
 	i = 0;
-	while (i < env->arg.max)
+	printf("arg : max = %d | time to die = %d | time to sleep = %d | time to eat = %d\n",\
+		env->arg.nb, env->arg.t_die, env->arg.t_sleep, env->arg.t_eat);
+	while (i < env->arg.nb)
 	{
-		printf("philo : nb = %d | eat = %d\n", env->philo[i].id, env->philo[i].eat);
+		printf("philo : nb = %d | eat = %d | last eat = %d | fork = %d", env->philo[i].id,\
+		env->philo[i].eat, env->philo[i].last_eat, env->philo[i].fork.data);
+		if (env->philo[i].next_fork)
+			printf(" | next_fork = %d\n", env->philo[i].next_fork->data);
+		else
+			printf("\n");
 		i++;
 	}
 }

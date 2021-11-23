@@ -23,6 +23,8 @@ int	init_philo(t_env *env, int	nb)
 	if (ret != 0)
 		return (0);
 	env->philo[nb].fork.data = 1;
+	env->philo[nb].arg = env->arg;
+	env->philo[nb].last_eat = 0;
 	return (1);
 }
 
@@ -30,14 +32,14 @@ int	init_arg(t_env *env, char **av, int ac)
 {
 	int	ret;
 
-	env->arg.max = safe_atoi(av[1]);
-	env->arg.die = safe_atoi(av[2]);
-	env->arg.sleep = safe_atoi(av[3]);
-	env->arg.eat = safe_atoi(av[4]);
+	env->arg.nb = safe_atoi(av[1]);
+	env->arg.t_die = safe_atoi(av[2]);
+	env->arg.t_sleep = safe_atoi(av[3]);
+	env->arg.t_eat = safe_atoi(av[4]);
 	if (ac == 6)
-		env->arg.limit = safe_atoi(av[5]);
+		env->arg.max_eat = safe_atoi(av[5]);
 	else
-		env->arg.limit = -1;
+		env->arg.max_eat = -1;
 	gettimeofday(&env->arg.tv, NULL);
 	env->arg.time = env->arg.tv.tv_sec * 1000 + env->arg.tv.tv_usec / 1000;
 	ret = pthread_mutex_init(&(env->arg.dead.mutex), NULL);
@@ -63,14 +65,14 @@ int		pars(t_env *env, char **av, int ac)
 		printf("arg ?\n");
 		return (0);
 	}
-	env->philo = malloc(sizeof(t_philo) * env->arg.max);
+	env->philo = malloc(sizeof(t_philo) * env->arg.nb);
 	if (!env->philo)
 	{
 		printf("malloc philo ?\n");
 		return (0);
 	}
 	i = 0;
-	while (i < env->arg.max)
+	while (i < env->arg.nb)
 	{
 		ret = init_philo(env, i);
 		if (!ret)
@@ -78,11 +80,13 @@ int		pars(t_env *env, char **av, int ac)
 			printf("init philo ?\n");
 			return (0);
 		}
-		if (i > 0)
+		if (i > 0 && env->arg.nb > 1)
 			env->philo[i - 1].next_fork = &(env->philo[i].fork);
 		i++;
 	}
-	if (i > 0)
+	if (i > 0 && env->arg.nb > 1)
 		env->philo[i - 1].next_fork = &(env->philo[0].fork);
+	else
+		env->philo[i - 1].next_fork = NULL;
 	return (1);
 }

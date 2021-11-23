@@ -12,90 +12,103 @@
 
 #include "philo.h"
 
-// int	get_close_fork(t_philo *philo)
-// {
-// 	if (philo.fork.data)
-// 	{
-// 		if (philo.fork.next_fork->data)
-// 			return (1);
-// 	}
-// 	return (0);
-// }
+int	get_close_fork(t_philo *philo)
+{
+	if (philo->fork.data)
+	{
+		if (philo->next_fork)
+		{
+			if (philo->next_fork->data)
+				return (1);
+		}
+		else
+			return (1);
+	}
+	return (0);
+}
 
-// void	*routine(void *arg)
-// {
-// 	t_philo	*philo;
-// 	int		close;
+void	*routine(void *arg)
+{
+	t_philo	*philo;
 
-// 	philo = arg;
-// 	while (philo.full != 1)
-// 	{
-// 		close = get_close_fork(philo);
-// 		if (env->fork[env->index].data == 1 && close > -1)
-// 		{
-// 			pthread_mutex_lock(&(env->fork[close].mutex));
-// 			env->fork[close].data = 0;
-// 			pthread_mutex_lock(&(env->fork[env->index].mutex));
-// 			env->fork[env->index].data = 2;
-// 			pthread_mutex_lock(&(env->print.mutex));
-// 			env->print.f(env->tv, env->time, env->philo[env->index].nb, "has taken a fork");
-// 			pthread_mutex_unlock(&(env->print.mutex));
-// 			if (env->limit != -1)
-// 			{
-// 				if (env->philo[env->index].eat < env->limit)
-// 					env->philo[env->index].eat++;
-// 				else
-// 					env->philo[env->index].full = 1;
-// 			}
-// 			if (env->fork[env->index].data == 2)
-// 			{
-// 				pthread_mutex_lock(&(env->print.mutex));
-// 				env->print.f(env->tv, env->time, env->philo[env->index].nb, "is eating");
-// 				pthread_mutex_unlock(&(env->print.mutex));
-// 				usleep(env->eat);
-// 			}
-// 			env->fork[close].data = 1;
-// 			pthread_mutex_unlock(&(env->fork[close].mutex));
-// 			env->fork[env->index].data = 1;
-// 			pthread_mutex_unlock(&(env->fork[env->index].mutex));
-// 			pthread_mutex_lock(&(env->print.mutex));
-// 			env->print.f(env->tv, env->time, env->philo[env->index].nb, "is sleeping");
-// 			pthread_mutex_unlock(&(env->print.mutex));
-// 			usleep(env->sleep);
-// 			pthread_mutex_lock(&(env->print.mutex));
-// 			env->print.f(env->tv, env->time, env->philo[env->index].nb, "is thinking");
-// 			pthread_mutex_unlock(&(env->print.mutex));
-// 		}
-// 		printf("NULL\n");
-// 	}
-// 	return (NULL);
-// }
+	philo = arg;
+	while (philo->full != 1 && !philo->arg.dead.data)
+	{
+		if (philo->arg.dead.data == 1)
+			break ;
+		if (philo->fork.data == 1 && get_close_fork(philo))
+		{
+			pthread_mutex_lock(&(philo->next_fork->mutex));
+			philo->fork.data = 0;
+			pthread_mutex_lock(&(philo->fork.mutex));
+			philo->fork.data = 2;
+			pthread_mutex_lock(&(philo->arg.print.mutex));
+			philo->arg.print.f(philo->arg.tv, philo->arg.time, philo->id, "has taken a fork");
+			pthread_mutex_unlock(&(philo->arg.print.mutex));
+			pthread_mutex_lock(&(philo->arg.print.mutex));
+			philo->arg.print.f(philo->arg.tv, philo->arg.time, philo->id, "is eating");
+			pthread_mutex_unlock(&(philo->arg.print.mutex));
+			philo->last_eat = (philo->arg.tv.tv_sec * 1000 + philo->arg.tv.tv_usec / 1000) - philo->arg.time - philo->last_eat;
+			usleep(philo->arg.t_eat);
+			philo->next_fork->data = 1;
+			pthread_mutex_unlock(&(philo->next_fork->mutex));
+			philo->fork.data = 1;
+			pthread_mutex_unlock(&(philo->fork.mutex));
+			pthread_mutex_lock(&(philo->arg.print.mutex));
+			philo->arg.print.f(philo->arg.tv, philo->arg.time, philo->id, "is sleeping");
+			pthread_mutex_unlock(&(philo->arg.print.mutex));
+			usleep(philo->arg.t_sleep);
+			pthread_mutex_lock(&(philo->arg.print.mutex));
+			philo->arg.print.f(philo->arg.tv, philo->arg.time, philo->id, "is thinking");
+			pthread_mutex_unlock(&(philo->arg.print.mutex));
+			if (philo->arg.max_eat != -1)
+			{
+				if (philo->eat < philo->arg.max_eat - 1)
+					philo->eat++;
+				else
+					philo->full = 1;
+			}
+		}
+	}
+	return (NULL);
+}
 
-// void	start(t_env *env)
-// {
-// 	int err;
-// 	int	i;
+void	start(t_env *env)
+{
+	int err;
+	int	i;
 
-// 	i = 0;
-// 	timestamp(env->arg.tv, env->arg.time, 0, "start");
-// 	while (i < env->arg.max)
-// 	{
-// 		if (env->philo[i].id % 2 == 0)
-// 			usleep(10);
-// 		err = pthread_create(&(env->philo[i].thread), NULL, routine, env);
-// 		i++;
-// 	}
-// 	i = 0;
-// 	while (i < env->arg.max)
-// 		pthread_join(env->philo[i++].thread, NULL);
-// }
+	i = 0;
+	timestamp(env->arg.tv, env->arg.time, 0, "start");
+	while (i < env->arg.nb)
+	{
+		if (env->philo[i].id % 2 == 0)
+			usleep(10);
+		err = pthread_create(&(env->philo[i].thread), NULL, routine, &(env->philo[i]));
+		if (err != 0)
+		{
+			printf("bug in pthread create thread\n");
+			return ;
+		}
+		err = pthread_create(&(env->philo[i].death), NULL, is_dead, &(env->philo[i]));
+		if (err != 0)
+		{
+			printf("bug in pthread create dead\n");
+			return ;
+		}
+		i++;
+	}
+	i = 0;
+	while (i < env->arg.nb)
+		pthread_join(env->philo[i++].thread, NULL);
+}
 
 void	finish(t_env *env)
 {
 	int	i;
 
 	i = 0;
-	while (i < env->arg.max)
+	while (i < env->arg.nb)
 	{
 		pthread_mutex_destroy(&(env->philo[i].fork.mutex));
 		i++;
@@ -122,9 +135,9 @@ int		main(int ac, char **av)
 			free(env.philo);
 		return (0);
 	}
-	printf("The %d Philosophers are now sitted around the table\n", env.arg.max);
+	printf("The %d Philosophers are now sitted around the table\n", env.arg.nb);
 	print_philo(&env);
-//	start(&env);
+	start(&env);
 	finish(&env);
 	return (1);
 }

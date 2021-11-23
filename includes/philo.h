@@ -31,29 +31,31 @@ typedef struct s_print
 	pthread_mutex_t	mutex;
 }	t_print;
 
-typedef struct s_philo
-{
-	int             id;
-	int				eat;
-	int				full;
-	struct s_mutex	fork;
-	struct s_mutex	*next_fork;
-	pthread_t		thread;
-	pthread_t		death;
-}	t_philo;
-
 typedef struct s_arg
 {
-	int				max;
-	int				die;
-	int				sleep;
-	int			    eat;
-	int				limit;
+	int				nb;
+	int				t_die;
+	int				t_sleep;
+	int			    t_eat;
+	int				max_eat;
 	int				time;
 	struct timeval	tv;
 	struct s_mutex	dead;
 	struct s_print	print;
 }	t_arg;
+
+typedef struct s_philo
+{
+	int             id;
+	int				eat;
+	int				full;
+	int				last_eat;
+	struct s_mutex	fork;
+	struct s_mutex	*next_fork;
+	struct s_arg	arg;
+	pthread_t		thread;
+	pthread_t		death;
+}	t_philo;
 
 typedef struct s_env
 {
@@ -64,6 +66,7 @@ typedef struct s_env
 unsigned long long int	safe_atoi(char *str);
 void					print_philo(t_env *env);
 int						timestamp(struct timeval tv, int time, int nb, char *act);
+void					*is_dead(void *param);
 
 int				pars(t_env *env, char **av, int ac);
 int				init_philo(t_env *env, int	nb);
