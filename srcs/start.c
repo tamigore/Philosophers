@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 16:06:05 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/23 20:16:35 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/11/24 11:48:09 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,10 @@ void	*is_dead(void *param)
 	philo = (t_philo *)param;
 	while (1)
 	{
+		ft_usleep(5);
 		if (check_death(philo))
 			return (NULL);
-		time = philo->arg.time - actual_time();
+		time = actual_time() - philo->arg.time;
 		pthread_mutex_lock(&(philo->last_eat.mutex));
 		if (time - philo->last_eat.data > philo->arg.t_die && !check_death(philo))
 		{
@@ -42,6 +43,9 @@ void	*is_dead(void *param)
 			pthread_mutex_lock(&(philo->arg.print.mutex));
 			philo->arg.print.f(philo->arg.time, philo->id, "is dead");
 			pthread_mutex_unlock(&(philo->arg.print.mutex));
+			pthread_mutex_lock(&(philo->arg.dead.mutex));
+			philo->arg.dead.data = 1;
+			pthread_mutex_unlock(&(philo->arg.dead.mutex));
 			return (NULL);
 		}
 		pthread_mutex_unlock(&(philo->last_eat.mutex));
@@ -132,12 +136,6 @@ void	start(t_env *env)
 			printf("bug in pthread create dead\n");
 			return ;
 		}
-		// err = pthread_detach(env->philo[i].death);
-		// if (err != 0)
-		// {
-		// 	printf("bug in pthread detach dead\n");
-		// 	return ;
-		// }
 		i++;
 	}
 	i = 0;
@@ -147,5 +145,4 @@ void	start(t_env *env)
 		pthread_join(env->philo[i].death, NULL);
 		i++;
 	}
-	printf("end...\n");
 }
