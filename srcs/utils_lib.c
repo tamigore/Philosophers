@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:13:04 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/23 20:02:44 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/11/24 18:10:54 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ unsigned long long int	safe_atoi(char *str)
 	while (str[i])
 	{
 		if ((str[i] < '0' || str[i] > '9') && str[i] != '+')
-			exit(EXIT_FAILURE);
+			return (0);
 		i++;
 	}
 	i = 0;
@@ -30,7 +30,20 @@ unsigned long long int	safe_atoi(char *str)
 		i++;
 	while (str[i] && str[i] >= '0' && str[i] <= '9')
 		nb = nb * 10 + str[i++] - '0';
+	if (nb > 2147483647)
+		return (0);
 	return (nb);
+}
+
+long int	actual_time(void)
+{
+	struct timeval	tv;
+	int				err;
+
+	err = gettimeofday(&tv, NULL);
+	if (err != 0)
+		return (-1);
+	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
 void	ft_usleep(long int time_in_ms)

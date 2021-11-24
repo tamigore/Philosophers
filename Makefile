@@ -10,7 +10,8 @@ SOURCES =	main.c		\
 			utils_lib.c	\
 			utils_phi.c	\
 			init.c		\
-			start.c
+			start.c		\
+			act.c
 
 SRCS = $(addprefix $(DIR_S),$(SOURCES))
 

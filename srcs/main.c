@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 18:31:08 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/23 17:05:02 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/11/24 18:13:26 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,22 @@ void	finish(t_env *env)
 	int	i;
 
 	i = 0;
-	while (i < env->arg.nb)
+	while (i < env->arg->nb)
 	{
 		pthread_mutex_destroy(&(env->philo[i].fork.mutex));
+		pthread_mutex_destroy(&(env->philo[i].full.mutex));
+		pthread_mutex_destroy(&(env->philo[i].last_eat.mutex));
 		i++;
 	}
-	free(env->philo);
-	pthread_mutex_destroy(&(env->arg.print.mutex));
-	pthread_mutex_destroy(&(env->arg.dead.mutex));
+	pthread_mutex_destroy(&(env->arg->print.mutex));
+	pthread_mutex_destroy(&(env->arg->dead.mutex));
+	if (env->philo)
+		free(env->philo);
+	if (env->arg)
+		free(env->arg);
 }
 
-int		main(int ac, char **av)
+int	main(int ac, char **av)
 {
 	t_env	env;
 
@@ -39,13 +44,12 @@ int		main(int ac, char **av)
 	}
 	if (!pars(&env, av, ac))
 	{
-		printf("pars error\n");
 		if (env.philo)
 			free(env.philo);
+		if (env.arg)
+			free(env.arg);
 		return (0);
 	}
-	printf("The %d Philosophers are now sitted around the table\n", env.arg.nb);
-	print_philo(&env);
 	start(&env);
 	finish(&env);
 	return (1);
