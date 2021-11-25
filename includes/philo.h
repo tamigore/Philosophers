@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/04 18:20:11 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/24 18:10:56 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/11/25 14:06:57 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,21 @@ typedef struct s_mutex
 	pthread_mutex_t	mutex;
 }	t_mutex;
 
+typedef struct s_philo
+{
+	int				id;
+	int				eat;
+	struct s_mutex	full;
+	struct s_mutex	last_eat;
+	struct s_mutex	fork;
+	struct s_mutex	*next_fork;
+	struct s_arg	*arg;
+	pthread_t		thread;
+}	t_philo;
+
 typedef struct s_print
 {
-	int				(*f)(long int timestart, int nb, char *act);
+	int				(*f)(struct s_philo *philo, int nb, char *act);
 	pthread_mutex_t	mutex;
 }	t_print;
 
@@ -41,20 +53,9 @@ typedef struct s_arg
 	long int		time;
 	struct s_mutex	dead;
 	struct s_print	print;
+	char			buf[4096];
 	pthread_t		death;
 }	t_arg;
-
-typedef struct s_philo
-{
-	int				id;
-	int				eat;
-	struct s_mutex	full;
-	struct s_mutex	last_eat;
-	struct s_mutex	fork;
-	struct s_mutex	*next_fork;
-	struct s_arg	*arg;
-	pthread_t		thread;
-}	t_philo;
 
 typedef struct s_env
 {
@@ -66,7 +67,7 @@ int						check_death(t_philo *philo);
 int						check_full(t_philo *philo);
 void					print_philo(t_env *env);
 int						get_close_fork(t_philo *philo);
-int						timestamp(long int time, int nb, char *act);
+int						timestamp(t_philo *philo, int nb, char *act);
 
 long int				actual_time(void);
 void					ft_usleep(long int time_in_ms);

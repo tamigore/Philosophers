@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 14:44:16 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/24 18:10:56 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/11/25 14:06:59 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,17 @@
 
 void	act_other(t_philo *philo, int i)
 {
-	if (i && !check_death(philo))
+	if (i)
 	{
 		pthread_mutex_lock(&(philo->arg->print.mutex));
-		philo->arg->print.f(philo->arg->time, philo->id, "is sleeping");
+		philo->arg->print.f(philo, 1, "is sleeping");
 		pthread_mutex_unlock(&(philo->arg->print.mutex));
 		ft_usleep(philo->arg->t_sleep);
 	}
-	if (i && !check_death(philo))
+	if (i)
 	{
 		pthread_mutex_lock(&(philo->arg->print.mutex));
-		philo->arg->print.f(philo->arg->time, philo->id, "is thinking");
+		philo->arg->print.f(philo, 1, "is thinking");
 		pthread_mutex_unlock(&(philo->arg->print.mutex));
 	}
 }
@@ -52,8 +52,8 @@ void	act_eat(t_philo *philo)
 	philo->fork.data = 0;
 	philo->fork.data = 2;
 	pthread_mutex_lock(&(philo->arg->print.mutex));
-	philo->arg->print.f(philo->arg->time, philo->id, "has taken a fork");
-	philo->arg->print.f(philo->arg->time, philo->id, "is eating");
+	philo->arg->print.f(philo, 1, "has taken a fork");
+	philo->arg->print.f(philo, 1, "is eating");
 	pthread_mutex_unlock(&(philo->arg->print.mutex));
 	pthread_mutex_lock(&(philo->last_eat.mutex));
 	philo->last_eat.data = actual_time() - philo->arg->time;

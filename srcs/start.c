@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 16:06:05 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/24 18:22:18 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/11/25 14:00:19 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,11 @@ void	*is_dead(void *param)
 		pthread_mutex_unlock(&(philo->last_eat.mutex));
 		if (time && !check_death(philo) && !check_full(philo))
 		{
-			if (check_death(philo) || check_full(philo))
-				return (NULL);
 			pthread_mutex_lock(&(philo->arg->dead.mutex));
 			philo->arg->dead.data = 1;
 			pthread_mutex_unlock(&(philo->arg->dead.mutex));
 			pthread_mutex_lock(&(philo->arg->print.mutex));
-			philo->arg->print.f(philo->arg->time, philo->id, "is dead");
+			philo->arg->print.f(philo, 0, "is dead");
 			pthread_mutex_unlock(&(philo->arg->print.mutex));
 			return (NULL);
 		}
@@ -46,18 +44,35 @@ void	*routine(void *arg)
 	int		i;
 
 	philo = (t_philo *)arg;
+	i = 1;
 	while (!check_death(philo) && !check_full(philo))
 	{
-		pthread_mutex_lock(&(philo->fork.mutex));
-		if (philo->next_fork)
-			pthread_mutex_lock(&(philo->next_fork->mutex));
-		i = (philo->fork.data == 1 && get_close_fork(philo));
-		pthread_mutex_unlock(&(philo->fork.mutex));
-		if (philo->next_fork)
-			pthread_mutex_unlock(&(philo->next_fork->mutex));
-		if (i && !check_death(philo))
-			act_eat(philo);
-		act_other(philo, i);
+		if (philo->id % 2 == 1)
+		{
+			pthread_mutex_lock(&(philo->fork.mutex));
+			if (philo->next_fork)
+				pthread_mutex_lock(&(philo->next_fork->mutex));
+			i = (philo->fork.data == 1 && get_close_fork(philo));
+			pthread_mutex_unlock(&(philo->fork.mutex));
+			if (philo->next_fork)
+				pthread_mutex_unlock(&(philo->next_fork->mutex));
+			if (i && !check_death(philo))
+				act_eat(philo);
+			act_other(philo, i);
+		}
+		else
+		{
+			act_other(philo, i);
+			pthread_mutex_lock(&(philo->fork.mutex));
+			if (philo->next_fork)
+				pthread_mutex_lock(&(philo->next_fork->mutex));
+			i = (philo->fork.data == 1 && get_close_fork(philo));
+			pthread_mutex_unlock(&(philo->fork.mutex));
+			if (philo->next_fork)
+				pthread_mutex_unlock(&(philo->next_fork->mutex));
+			if (i)
+				act_eat(philo);
+		}
 	}
 	return (NULL);
 }
@@ -68,7 +83,7 @@ int	start(t_env *env)
 	int	i;
 
 	i = -1;
-	timestamp(env->arg->time, 0, "start");
+	timestamp(env->philo, 0, "start");
 	while (++i < env->arg->nb)
 	{
 		err = pthread_create(&(env->philo[i].thread), NULL, routine, \
