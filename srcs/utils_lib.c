@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:13:04 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/24 18:10:54 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/11/25 15:17:44 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,88 @@ void	ft_usleep(long int time_in_ms)
 	start_time = actual_time();
 	while ((actual_time() - start_time) < time_in_ms)
 		usleep(time_in_ms / 10);
+}
+
+void	fill_buf(char *buf, int time, int id, char *act)
+{
+	int	i;
+	int	j;
+	int	tmp;
+	int	nb;
+
+	i = 0;
+	buf[i++] = 't';
+	buf[i++] = 'i';
+	buf[i++] = 'm';
+	buf[i++] = 'e';
+	buf[i++] = ' ';
+	buf[i++] = '|';
+	j = 0;
+	nb = time;
+	while (nb > 0)
+	{
+		j++;
+		nb /= 10;
+	}
+	tmp = j;
+	while (j >= 0)
+	{
+		buf[i + j--] = time % 10 + '0';
+		time /= 10;
+	}
+	i += tmp;
+	buf[i++] = '|';
+	buf[i++] = ':';
+	buf[i++] = ' ';
+	buf[i++] = 'P';
+	buf[i++] = 'h';
+	buf[i++] = 'i';
+	buf[i++] = 'l';
+	buf[i++] = 'o';
+	buf[i++] = 's';
+	buf[i++] = 'o';
+	buf[i++] = 'p';
+	buf[i++] = 'h';
+	buf[i++] = 'e';
+	buf[i++] = ' ';
+	buf[i++] = 'n';
+	buf[i++] = 'u';
+	buf[i++] = 'm';
+	buf[i++] = 'b';
+	buf[i++] = 'e';
+	buf[i++] = 'r';
+	buf[i++] = ' ';
+	j = 0;
+	nb = id;
+	while (nb > 0)
+	{
+		j++;
+		nb /= 10;
+	}
+	tmp = j;
+	while (j >= 0)
+	{
+		buf[i + j--] = id % 10 + '0';
+		id /= 10;
+	}
+	i += tmp;
+	buf[i++] = ' ';
+	j = 0;
+	while (act[j])
+		buf[i++] = act[j++];
+	buf[i] = '\n';
+}
+
+void	print_buf(char *buf)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	while (buf[i])
+		i++;
+	write(1, buf, i);
+	j = 0;
+	while (j < i)
+		buf[j++] = '\0';
 }

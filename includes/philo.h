@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/04 18:20:11 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/25 14:06:57 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/11/25 15:16:38 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ typedef struct s_arg
 	long int		time;
 	struct s_mutex	dead;
 	struct s_print	print;
-	char			buf[4096];
 	pthread_t		death;
 }	t_arg;
 
@@ -72,6 +71,8 @@ int						timestamp(t_philo *philo, int nb, char *act);
 long int				actual_time(void);
 void					ft_usleep(long int time_in_ms);
 unsigned long long int	safe_atoi(char *str);
+void					print_buf(char *buf);
+void					fill_buf(char *buf, int time, int id, char *act);
 
 void					*is_dead(void *param);
 void					*routine(void *arg);

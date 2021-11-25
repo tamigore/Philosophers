@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 18:30:56 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/25 13:51:11 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/11/25 15:16:18 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,13 +55,16 @@ int	timestamp(t_philo *philo, int nb, char *act)
 {
 	long int	err;
 	int			t;
+	char		buf[128];
 
-	err = actual_time();
-	if (err == -1)
-		return (0);
-	t = err - philo->arg->time;
 	if (!check_death(philo) || !nb)
-		printf("\x1b[31m""time |%5d|""\x1b[36m"": Philosophe number %d %s\n", \
-			t, philo->id, act);	
+	{
+		err = actual_time();
+		if (err == -1)
+			return (0);
+		t = err - philo->arg->time;
+		fill_buf(buf, t, philo->id, act);
+		print_buf(buf);
+	}
 	return (1);
 }
