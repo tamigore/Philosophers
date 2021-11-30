@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 18:30:56 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/26 17:52:55 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/11/30 17:00:41 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,15 +38,10 @@ int	check_full(t_philo *philo)
 
 int	get_close_fork(t_philo *philo)
 {
-	if (philo->fork.data)
+	if (philo->next_fork)
 	{
-		if (philo->next_fork)
-		{
-			if (philo->next_fork->data)
-				return (1);
-		}
-		else
-			return (0);
+		if (philo->next_fork->data)
+			return (1);
 	}
 	return (0);
 }
@@ -55,7 +50,6 @@ int	timestamp(t_philo *philo, int nb, char *act)
 {
 	long int	err;
 	int			t;
-	// char		buf[128];
 
 	if (!check_death(philo) || !nb)
 	{
@@ -64,15 +58,6 @@ int	timestamp(t_philo *philo, int nb, char *act)
 			return (0);
 		t = err - philo->arg->time;
 		printf("time |%d|: Phiosophe number %d %s\n", t, philo->id, act);
-		// err = 0;
-		// while (err < 128)
-		// 	buf[err++] = '\0';
-		// t = fill_buf("time |*|: Phiosophe number * *\n", t, philo->id, buf);
-		// err = 0;
-		// while (act[err])
-		// 	buf[t++] = act[err++];
-		// buf[t] = '\n';
-		// print_buf(buf);
 	}
 	return (1);
 }
