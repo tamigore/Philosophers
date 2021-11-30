@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/04 18:20:11 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/25 15:16:38 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/11/26 17:51:18 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,8 @@ typedef struct s_env
 	struct s_arg	*arg;
 }	t_env;
 
+void					ft_putstr(char *str);
+
 int						check_death(t_philo *philo);
 int						check_full(t_philo *philo);
 void					print_philo(t_env *env);
@@ -72,9 +74,8 @@ long int				actual_time(void);
 void					ft_usleep(long int time_in_ms);
 unsigned long long int	safe_atoi(char *str);
 void					print_buf(char *buf);
-void					fill_buf(char *buf, int time, int id, char *act);
+int						fill_buf(char *str, int time, int id, char *buf);
 
-void					*is_dead(void *param);
 void					*routine(void *arg);
 int						start(t_env *env);
 

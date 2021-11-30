@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 18:56:02 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/24 18:10:59 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/11/26 16:38:03 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,5 @@ int	pars(t_env *env, char **av, int ac)
 		env->philo[i - 1].next_fork = &(env->philo[0].fork);
 	else
 		env->philo[i - 1].next_fork = NULL;
-	env->arg->time = actual_time();
 	return (1);
 }

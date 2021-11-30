@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:13:04 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/25 15:17:44 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/11/26 17:33:53 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,95 +46,75 @@ long int	actual_time(void)
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-void	ft_usleep(long int time_in_ms)
+void	ft_usleep(/*t_philo *philo, */long int time_in_ms)
 {
 	long int	start_time;
 
 	start_time = actual_time();
-	while ((actual_time() - start_time) < time_in_ms)
-		usleep(time_in_ms / 10);
+	while ((actual_time() - start_time) < time_in_ms/* && !check_death(philo)*/)
+		usleep(time_in_ms / (time_in_ms / 2));
 }
 
-void	fill_buf(char *buf, int time, int id, char *act)
+int	putnbr_to_buf(int nb, char *buf, int i)
+{
+	int	tmp;
+	int	j;
+
+	if (nb < 10)
+	{
+		buf[i] = nb + '0';
+		return (1);
+	}
+	j = 0;
+	tmp = nb;
+	while (tmp > 0)
+	{
+		j++;
+		tmp /= 10;
+	}
+	tmp = j;
+	while (j > 0)
+	{
+		buf[i + --j] = nb % 10 + '0';
+		nb /= 10;
+	}
+	return (tmp);
+}
+
+void	ft_putstr(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	write(1, str, i);
+}
+
+int	fill_buf(char *str, int time, int id, char *buf)
 {
 	int	i;
 	int	j;
-	int	tmp;
-	int	nb;
 
 	i = 0;
-	buf[i++] = 't';
-	buf[i++] = 'i';
-	buf[i++] = 'm';
-	buf[i++] = 'e';
-	buf[i++] = ' ';
-	buf[i++] = '|';
 	j = 0;
-	nb = time;
-	while (nb > 0)
-	{
-		j++;
-		nb /= 10;
-	}
-	tmp = j;
-	while (j >= 0)
-	{
-		buf[i + j--] = time % 10 + '0';
-		time /= 10;
-	}
-	i += tmp;
-	buf[i++] = '|';
-	buf[i++] = ':';
+	while (str[j] && str[j] != '*')
+		buf[i++] = str[j++];
+	i += putnbr_to_buf(time, buf, i);
+	j++;
+	while (str[j] && str[j] != '*')
+			buf[i++] = str[j++];
+	i += putnbr_to_buf(id, buf, i);
 	buf[i++] = ' ';
-	buf[i++] = 'P';
-	buf[i++] = 'h';
-	buf[i++] = 'i';
-	buf[i++] = 'l';
-	buf[i++] = 'o';
-	buf[i++] = 's';
-	buf[i++] = 'o';
-	buf[i++] = 'p';
-	buf[i++] = 'h';
-	buf[i++] = 'e';
-	buf[i++] = ' ';
-	buf[i++] = 'n';
-	buf[i++] = 'u';
-	buf[i++] = 'm';
-	buf[i++] = 'b';
-	buf[i++] = 'e';
-	buf[i++] = 'r';
-	buf[i++] = ' ';
-	j = 0;
-	nb = id;
-	while (nb > 0)
-	{
-		j++;
-		nb /= 10;
-	}
-	tmp = j;
-	while (j >= 0)
-	{
-		buf[i + j--] = id % 10 + '0';
-		id /= 10;
-	}
-	i += tmp;
-	buf[i++] = ' ';
-	j = 0;
-	while (act[j])
-		buf[i++] = act[j++];
-	buf[i] = '\n';
+	return (i);
 }
 
 void	print_buf(char *buf)
 {
 	int	i;
-	int	j;
 
 	i = 0;
 	while (buf[i])
 		i++;
 	write(1, buf, i);
-	j = 0;
-	while (j < i)
-		buf[j++] = '\0';
 }
