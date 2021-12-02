@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/04 18:20:11 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/30 17:01:59 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/12/02 14:13:12 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,6 @@ void					check_eat(t_philo *philo);
 int						check_death(t_philo *philo);
 int						check_full(t_philo *philo);
 void					print_philo(t_env *env);
-int						get_close_fork(t_philo *philo);
 int						timestamp(t_philo *philo, int nb, char *act);
 
 long int				actual_time(void);
@@ -81,7 +80,7 @@ int						start(t_env *env);
 int						pars(t_env *env, char **av, int ac);
 int						init_philo(t_env *env, int nb);
 
-void					act_other(t_philo *philo, int i);
-void					act_eat(t_philo *philo);
+void					act(t_philo *philo);
+void					extra_fork(t_philo *philo, int x, int y);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:13:04 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/30 14:14:48 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/12/02 15:36:00 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,5 +52,5 @@ void	ft_usleep(long int time_in_ms)
 
 	start_time = actual_time();
 	while ((actual_time() - start_time) < time_in_ms)
-		usleep(time_in_ms / (time_in_ms / 2));
+		usleep(time_in_ms / 2);
 }

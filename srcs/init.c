@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 18:56:02 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/30 17:02:02 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/12/02 12:32:11 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ int	init_arg(t_env *env, char **av, int ac)
 		return (0);
 	env->arg->nb = safe_atoi(av[1]);
 	env->arg->t_die = safe_atoi(av[2]);
-	env->arg->t_sleep = safe_atoi(av[3]);
-	env->arg->t_eat = safe_atoi(av[4]);
+	env->arg->t_eat = safe_atoi(av[3]);
+	env->arg->t_sleep = safe_atoi(av[4]);
 	if (!env->arg->t_die || !env->arg->nb || !env->arg->t_sleep \
 		|| !env->arg->t_eat)
 		return (0);

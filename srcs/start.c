@@ -6,7 +6,7 @@
 /*   By: tamigore <tamigore@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 16:06:05 by tamigore          #+#    #+#             */
-/*   Updated: 2021/11/30 16:03:47 by tamigore         ###   ########.fr       */
+/*   Updated: 2021/12/02 15:37:08 by tamigore         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,19 +23,26 @@ void	*routine(void *arg)
 		i = 0;
 		if (philo->next_fork)
 		{
-			pthread_mutex_lock(&(philo->fork.mutex));
-			i = philo->fork.data == 1;
-			pthread_mutex_unlock(&(philo->fork.mutex));
-			pthread_mutex_lock(&(philo->next_fork->mutex));
-			i += get_close_fork(philo);
-			pthread_mutex_unlock(&(philo->next_fork->mutex));
+			while (i == 0 && !check_death(philo))
+			{
+				pthread_mutex_lock(&(philo->fork.mutex));
+				i = philo->fork.data == 1;
+				pthread_mutex_unlock(&(philo->fork.mutex));
+			}
+			while (i == 1 && !check_death(philo))
+			{
+				pthread_mutex_lock(&(philo->next_fork->mutex));
+				i += philo->next_fork->data == 1;
+				pthread_mutex_unlock(&(philo->next_fork->mutex));
+			}
+			if (i == 2)
+			{
+				extra_fork(philo, 2, 0);
+				if (!check_death(philo))
+					act(philo);
+				check_eat(philo);
+			}
 		}
-		if (i == 2 && !check_death(philo))
-		{
-			act_eat(philo);
-			check_eat(philo);
-		}
-		act_other(philo, i);
 	}
 	return (NULL);
 }
@@ -68,7 +75,7 @@ static void	death_loop(t_env *env, int i, int time, int full)
 			pthread_mutex_lock(&(env->arg->print.mutex));
 			env->arg->print.f(&env->philo[i], 0, "is dead");
 			pthread_mutex_unlock(&(env->arg->print.mutex));
-			i = env->arg->nb - 1;
+				break;
 		}
 		if (check_full(&env->philo[i]))
 			extra_full(env, &full, &i);
@@ -85,7 +92,7 @@ int	start(t_env *env)
 	i = -1;
 	env->arg->time = actual_time();
 	while (++i < env->arg->nb)
-		pthread_create(&(env->philo[i].thread), NULL, routine, \
+		pthread_create(&(env->philo[i].thread), NULL, routine,
 			&(env->philo[i]));
 	full = 0;
 	time = 0;
